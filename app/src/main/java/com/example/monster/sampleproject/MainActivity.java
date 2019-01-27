@@ -2,12 +2,16 @@ package com.example.monster.sampleproject;
 
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,10 +19,13 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -50,8 +57,10 @@ public class MainActivity extends AppCompatActivity {
     private ActivityHelper ah = new ActivityHelper();
     private BroadcastReceiver receiver;
     private IntentFilter filters;
+    private Button notiButton;
     private int clickCount = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -61,11 +70,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+
         radioLiveKindSpinner = (Spinner) findViewById(R.id.radioLiveSpinner);
         radioLiveTitle = (TextView) findViewById(R.id.radioLiveTitle);
         playPauseButton = (ImageView) findViewById(R.id.playPauseButton);
         loadingText = (TextView) findViewById(R.id.loadingText);
         footerText = (TextView) findViewById(R.id.footerText);
+        //notiButton =  (Button) findViewById(R.id.notificationClick);
         progressDialog = new ProgressDialog(MainActivity.this);
 
         Calendar calendar = Calendar.getInstance();
@@ -103,12 +114,15 @@ public class MainActivity extends AppCompatActivity {
 
         radioLiveKindSpinner.setAdapter(adapter);
 
+        //notiButton.performClick();
+        //notiButton.setVisibility(View.GONE);
+
         radioLiveKindSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 progressDialog.setMessage("Yükleniyor..");
                 if (i == 0) {
-                    radioStreamUrl = "https://m.egm.gov.tr:8095";
+                    radioStreamUrl = "https://m.egm.gov.tr:8093";
                 } else if (i == 1) {
                     radioStreamUrl = "https://m.egm.gov.tr:8095";
                 } else if (i == 2) {
@@ -117,15 +131,15 @@ public class MainActivity extends AppCompatActivity {
                     radioStreamUrl = "http://vr-live-mp3-128.scdn.arkena.com/virginradio.mp3";
                 } else if (i == 4) {
                     radioStreamUrl = "https://listen.radyofenomen.com/fenomen/128/icecast.audio";
-                } else if(i == 5) {
+                } else if (i == 5) {
                     radioStreamUrl = "http://95.173.188.166:9984/";
-                } else if(i == 6) {
+                } else if (i == 6) {
                     radioStreamUrl = "https://17773.live.streamtheworld.com/FLASHBACK.mp3";
-                } else if(i == 7) {
+                } else if (i == 7) {
                     radioStreamUrl = "http://fenomenoriental.listenfenomen.com/fenomenrap/128/icecast.audio";
-                } else if(i == 8) {
+                } else if (i == 8) {
                     radioStreamUrl = "http://yayin.damarfm.com:8080/mp3";
-                } else if(i == 9) {
+                } else if (i == 9) {
                     radioStreamUrl = "https://17753.live.streamtheworld.com/METRO_FM.mp3";
                 }
                 if (!isPlaying) {
@@ -146,11 +160,10 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             MediaPlayer mediaPlayer;
             public void onClick(View v) {
-                hideStatusBar();
+                //notiButton.performClick();
                 if (!ah.isOnline(MainActivity.this)) {
 
                     ah.alertBox(MainActivity.this, "Uyarı", "İnternet bağlantısını aktif hale getiriniz!");
@@ -212,25 +225,31 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
     private void hideStatusBar() {
-        if (Build.VERSION.SDK_INT < 16) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        } else {
-            View decorView = getWindow().getDecorView();
-
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY // hide status bar and nav bar after a short delay, or if the user interacts with the middle of the screen
-            );
-        }
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
+    public void createNotification(View view) {
+        // Prepare intent which is triggered if the
+        // notification is selected
+        Intent intent = new Intent(this, NotificationReceiverActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), intent, 0);
+
+        // Build notification
+        // Actions are just fake
+        Notification noti = new Notification.Builder(this)
+                .setContentTitle("İnternet Radyosu")
+                .setContentText("Radyonuz Yayınlarınız Artık İnternette").setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pIntent).build();
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // hide the notification after its selected
+        noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(0, noti);
+
+    }
 
     @Override
     protected void onResume() {
