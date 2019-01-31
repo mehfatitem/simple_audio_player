@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#64798A">
+
+    <LinearLayout
+        android:id="@+id/notificationLinearMain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnplay"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/btn_pause" />
+
+        <LinearLayout
+            android:id="@+id/notificationLinear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/notificationContentTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="İnternet Radyo Demo"
+                android:textColor="#FFFFFF" />
+
+            <TextView
+                android:id="@+id/notificationContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Canlı Yayın"
+                android:textColor="#FFFFFF" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/image1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="5dp"
+        android:src="@drawable/ic_gr_eco" />
+
+
+</RelativeLayout>

@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">İnternet Radyo Demo</string>
     <string name="loading">Başlatmak için play butonuna basınız ...</string>
+    <string name="notification_button_play">Oynat</string>
+    <string name="notification_button_skip">Geç</string>
 </resources>
