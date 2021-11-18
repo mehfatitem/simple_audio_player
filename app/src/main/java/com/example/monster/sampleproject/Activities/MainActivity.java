@@ -33,6 +33,8 @@ import com.google.android.exoplayer.ExoPlaybackException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private String tmpLiveName;
     private boolean isPlaying = false;
     private List<String> itemList;
+    private List<String> streamAddressList;
     private ProgressDialog progressDialog;
     private ActivityHelper ah = new ActivityHelper();
 
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         hideStatusBar();
         setContentView(R.layout.activity_main);
 
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         loadingText.setVisibility(View.VISIBLE);
 
-        playPauseButton.setImageResource(R.drawable.play);
+        playPauseButton.setImageResource(R.drawable.play2);
 
         playPauseButton.performClick();
 
@@ -106,10 +109,28 @@ public class MainActivity extends AppCompatActivity {
         itemList.add("Virgin Radio");
         itemList.add("Radio Fenomen");
         itemList.add("7/24 Türkçe Rap");
-        itemList.add("80'ler Gold");
         itemList.add("Fenomen Rap");
         itemList.add("Arabesk FM");
         itemList.add("Metro FM");
+        itemList.add("Best FM");
+        itemList.add("Kral FM");
+        itemList.add("Power FM");
+
+        Collections.sort(itemList);
+
+        streamAddressList = new ArrayList<String>();
+        streamAddressList.add("http://95.173.188.166:9984/"); // 7/24 türkçe rap
+        streamAddressList.add("http://yayin.damarfm.com:8080/mp3");// arabesk fm
+        streamAddressList.add("https://bestfm.turkhosted.com/");// best fm
+        streamAddressList.add("https://listen.radyofenomen.com/fenomenrap/128/icecast.audio"); // fenomen rap
+        streamAddressList.add("http://46.20.3.204:80/"); // kral fm
+        streamAddressList.add("https://25433.live.streamtheworld.com/METRO_FM128AAC.aac");// metro fm
+        streamAddressList.add("https://m.egm.gov.tr:8095"); // polis radyosu tsm
+        streamAddressList.add("https://m.egm.gov.tr:8093"); // polis radyosu
+        streamAddressList.add("http://powerfm.listenpowerapp.com/powerfm/mpeg/icecast.audio");// power fm
+        streamAddressList.add("https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio?/;stream.mp3"); // power turk
+        streamAddressList.add("https://listen.radyofenomen.com/fenomen/128/icecast.audio"); // radio fenomen
+        streamAddressList.add("https://21323.live.streamtheworld.com/VIRGIN_RADIO.mp3"); // virgin
 
 
         adapter = new ArrayAdapter(this,
@@ -124,27 +145,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 progressDialog.setMessage("Yükleniyor..");
-                if (i == 0) {
-                    radioStreamUrl = "https://m.egm.gov.tr:8093";
-                } else if (i == 1) {
-                    radioStreamUrl = "https://m.egm.gov.tr:8095";
-                } else if (i == 2) {
-                    radioStreamUrl = "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio?/;stream.mp3";
-                } else if (i == 3) {
-                    radioStreamUrl = "http://vr-live-mp3-128.scdn.arkena.com/virginradio.mp3";
-                } else if (i == 4) {
-                    radioStreamUrl = "https://listen.radyofenomen.com/fenomen/128/icecast.audio";
-                } else if (i == 5) {
-                    radioStreamUrl = "http://95.173.188.166:9984/";
-                } else if (i == 6) {
-                    radioStreamUrl = "https://17773.live.streamtheworld.com/FLASHBACK.mp3";
-                } else if (i == 7) {
-                    radioStreamUrl = "http://fenomenoriental.listenfenomen.com/fenomenrap/128/icecast.audio";
-                } else if (i == 8) {
-                    radioStreamUrl = "http://yayin.damarfm.com:8080/mp3";
-                } else if (i == 9) {
-                    radioStreamUrl = "https://17753.live.streamtheworld.com/METRO_FM.mp3";
-                }
+                radioStreamUrl = streamAddressList.get(i);
+
                 if (!isPlaying) {
                     playPauseButton.performClick();
                 } else {
@@ -166,60 +168,67 @@ public class MainActivity extends AppCompatActivity {
 
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (!ah.isOnline(MainActivity.this)) {
+                try {
+                    if (!ah.isOnline(MainActivity.this)) {
 
-                    ah.alertBox(MainActivity.this, "Uyarı", "İnternet bağlantısını aktif hale getiriniz!");
-                    playPauseButton.setImageResource(R.drawable.play);
-                    loadingText.setText("Durduruldu ...");
-                    stopPlaying();
-                } else {
-                    player = Player.getInstance(new IPlayer() {
-                        @Override
-                        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                            if (playbackState == 2) {
-                                Log.d("Status", "Buffering");
-                                progressDialog.show();
-                            }
-
-                            if (playbackState == 4) {
-                                Log.d("Status", "Playing");
-                                Player.btnStatus = true;
-                                progressDialog.hide();
-                            }
-                        }
-
-                        @Override
-                        public void onPlayWhenReadyCommitted() {
-
-                        }
-
-                        @Override
-                        public void onPlayerError(ExoPlaybackException error) {
-
-                        }
-
-                    });
-
-                    if (clickCount % 2 == 0) {
-                        playPauseButton.setImageResource(R.drawable.pause);
-                        try {
-                            progressDialog.show();
-                            player.start(radioStreamUrl, MainActivity.this);
-                        } catch (Exception ex) {
-                            Toast.makeText(MainActivity.this, ex.getMessage(),
-                                    Toast.LENGTH_LONG).show();
-                            isPlaying = false;
-                        } finally {
-                            loadingText.setText(tmpLiveName);
-                            progressDialog.hide();
-                        }
-                        isPlaying = true;
-                    } else {
-                        playPauseButton.setImageResource(R.drawable.play);
+                        ah.alertBox(MainActivity.this, "Uyarı", "İnternet bağlantısını aktif hale getiriniz!");
+                        playPauseButton.setImageResource(R.drawable.play2);
                         loadingText.setText("Durduruldu ...");
                         stopPlaying();
+                    } else {
+                        player = Player.getInstance(new IPlayer() {
+                            @Override
+                            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                                if (playbackState == 2) {
+                                    Log.d("Status", "Buffering");
+                                    progressDialog.show();
+                                }
+
+                                if (playbackState == 4) {
+                                    Log.d("Status", "Playing");
+                                    Player.btnStatus = true;
+                                    progressDialog.hide();
+                                }
+                            }
+
+                            @Override
+                            public void onPlayWhenReadyCommitted() {
+
+                            }
+
+                            @Override
+                            public void onPlayerError(ExoPlaybackException error) {
+
+                            }
+
+                        });
+
+                        if (clickCount % 2 == 0) {
+                            playPauseButton.setImageResource(R.drawable.pause2);
+                            try {
+                                progressDialog.show();
+                                player.start(radioStreamUrl, MainActivity.this);
+                            } catch (Exception ex) {
+                                Toast.makeText(MainActivity.this, ex.getMessage(),
+                                        Toast.LENGTH_LONG).show();
+                                isPlaying = false;
+                                progressDialog.hide();
+                            } finally {
+                                loadingText.setText(tmpLiveName);
+                                progressDialog.hide();
+                            }
+                            isPlaying = true;
+                        } else {
+                            playPauseButton.setImageResource(R.drawable.play2);
+                            loadingText.setText("Durduruldu ...");
+                            stopPlaying();
+                        }
+                        clickCount++;
                     }
-                    clickCount++;
+                } catch(Exception ex) {
+                    Toast.makeText(MainActivity.this, ex.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                    progressDialog.hide();
                 }
             }
 
@@ -233,6 +242,8 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     Toast.makeText(MainActivity.this, ex.getMessage(),
                             Toast.LENGTH_LONG).show();
+
+                    progressDialog.hide();
                 }
             }
 
