@@ -6,6 +6,9 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 
 public class ActivityHelper {
 
@@ -53,6 +56,22 @@ public class ActivityHelper {
                 });*/
         alertDialog.show();
         alertDialog.setCancelable(false);
+    }
+
+    public String loadJSONFromAsset(final Context context , String jsonFileName) {
+        String json = null;
+        try {
+            InputStream is = context.getAssets().open(jsonFileName);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        return json;
     }
 
 }

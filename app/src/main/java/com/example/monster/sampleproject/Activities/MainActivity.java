@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
@@ -24,21 +25,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.monster.sampleproject.Entities.Post;
+import com.example.monster.sampleproject.Entities.Root;
 import com.example.monster.sampleproject.Helper.ActivityHelper;
 import com.example.monster.sampleproject.Interface.IPlayer;
 import com.example.monster.sampleproject.R;
+import com.example.monster.sampleproject.Requesthandler.RequestHandler;
 import com.example.monster.sampleproject.Service.NotificationService;
 import com.example.monster.sampleproject.Singleton.Player;
 import com.google.android.exoplayer.ExoPlaybackException;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-
 
     private ImageView playPauseButton;
     private TextView radioLiveTitle;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private List<String> itemList;
     private List<String> streamAddressList;
     private ProgressDialog progressDialog;
+    private String radioInfoServiceUrl = "https://mehfatitem54.000webhostapp.com/internet_radio_web_service/webservice/server.php?operation=getRadioInfo";
     private ActivityHelper ah = new ActivityHelper();
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
@@ -78,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
         hideStatusBar();
         setContentView(R.layout.activity_main);
 
-        //endregion
-
         radioLiveKindSpinner = (Spinner) findViewById(R.id.radioLiveSpinner);
         radioLiveTitle = (TextView) findViewById(R.id.radioLiveTitle);
         playPauseButton = (ImageView) findViewById(R.id.playPauseButton);
@@ -102,69 +106,36 @@ public class MainActivity extends AppCompatActivity {
 
         radioLiveTitle.setText("Radyo Yayını Seçiniz...");
 
-        itemList = new ArrayList<String>();
-        itemList.add("Polis Radyosu U.Y.");
-        itemList.add("Polis Radyosu TSM Y.");
-        itemList.add("Power Türk");
-        itemList.add("Virgin Radio");
-        itemList.add("Radio Fenomen");
-        itemList.add("7/24 Türkçe Rap");
-        itemList.add("Fenomen Rap");
-        itemList.add("Arabesk FM");
-        itemList.add("Metro FM");
-        itemList.add("Best FM");
-        itemList.add("Kral FM");
-        itemList.add("Power FM");
+        try {
+            new RequestAsyncGet().execute();
+        } catch (Exception ex) {
 
-        Collections.sort(itemList);
+        } finally {
 
-        streamAddressList = new ArrayList<String>();
-        streamAddressList.add("http://95.173.188.166:9984/"); // 7/24 türkçe rap
-        streamAddressList.add("http://yayin.damarfm.com:8080/mp3");// arabesk fm
-        streamAddressList.add("https://bestfm.turkhosted.com/");// best fm
-        streamAddressList.add("https://listen.radyofenomen.com/fenomenrap/128/icecast.audio"); // fenomen rap
-        streamAddressList.add("http://46.20.3.204:80/"); // kral fm
-        streamAddressList.add("https://25433.live.streamtheworld.com/METRO_FM128AAC.aac");// metro fm
-        streamAddressList.add("https://m.egm.gov.tr:8095"); // polis radyosu tsm
-        streamAddressList.add("https://m.egm.gov.tr:8093"); // polis radyosu
-        streamAddressList.add("http://powerfm.listenpowerapp.com/powerfm/mpeg/icecast.audio");// power fm
-        streamAddressList.add("https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio?/;stream.mp3"); // power turk
-        streamAddressList.add("https://listen.radyofenomen.com/fenomen/128/icecast.audio"); // radio fenomen
-        streamAddressList.add("https://21323.live.streamtheworld.com/VIRGIN_RADIO.mp3"); // virgin
+            radioLiveKindSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    progressDialog.setMessage("Yükleniyor..");
+                    radioStreamUrl = streamAddressList.get(i);
 
-
-        adapter = new ArrayAdapter(this,
-                android.R.layout.simple_spinner_item,
-                itemList);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        radioLiveKindSpinner.setAdapter(adapter);
-
-        radioLiveKindSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                progressDialog.setMessage("Yükleniyor..");
-                radioStreamUrl = streamAddressList.get(i);
-
-                if (!isPlaying) {
-                    playPauseButton.performClick();
-                } else {
-                    playPauseButton.performClick();
-                    playPauseButton.performClick();
+                    if (!isPlaying) {
+                        playPauseButton.performClick();
+                    } else {
+                        playPauseButton.performClick();
+                        playPauseButton.performClick();
+                    }
+                    tmpLiveName = itemList.get(i);
+                    loadingText.setText(itemList.get(i));
+                    Log.d("stream url", radioStreamUrl);
+                    startService(radioStreamUrl, tmpLiveName);
                 }
-                tmpLiveName = itemList.get(i);
-                loadingText.setText(itemList.get(i));
-                Log.d("stream url", radioStreamUrl);
-                startService(radioStreamUrl, tmpLiveName);
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
 
-            }
-
-        });
+                }
+            });
+        }
 
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -246,8 +217,51 @@ public class MainActivity extends AppCompatActivity {
                     progressDialog.hide();
                 }
             }
-
         });
+    }
+
+    public class RequestAsyncGet extends AsyncTask<String,String,String> {
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                String radioInfoJson =  RequestHandler.sendGet(radioInfoServiceUrl);
+
+                return radioInfoJson;
+            } catch (Exception e) {
+                return new String("Exception: " + e.getMessage());
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            if (s != null) {
+                //Toast.makeText(getApplicationContext(), s, Toast.LENGTH_LONG).show();
+                Root radioInfoRoot = new Root();
+                try{
+                    radioInfoRoot  = new Gson().fromJson(s, Root.class);
+                }catch (Exception ex) {
+                    s = ah.loadJSONFromAsset(MainActivity.this , "radio_info.json");
+                    radioInfoRoot  = new Gson().fromJson(s, Root.class);
+                }
+
+
+                itemList = new ArrayList<String>();
+                streamAddressList = new ArrayList<String>();
+
+                for (Post item : radioInfoRoot.posts) {
+                    itemList.add(item.radio_name);
+                    streamAddressList.add(item.stream_url);
+                }
+
+                adapter = new ArrayAdapter(MainActivity.this,
+                        android.R.layout.simple_spinner_item,
+                        itemList);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                radioLiveKindSpinner.setAdapter(adapter);
+            }
+        }
     }
 
     private void hideStatusBar() {
