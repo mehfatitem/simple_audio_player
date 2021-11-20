@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:screenOrientation="portrait"
     android:background="@drawable/radio_background2"
-    tools:context=".MainActivity"
+    tools:context=".Activities.MainActivity"
     tools:ignore="ContentDescription">
 
     <TextView
@@ -86,7 +86,7 @@
         android:id="@+id/radioLiveSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:background="#E6FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

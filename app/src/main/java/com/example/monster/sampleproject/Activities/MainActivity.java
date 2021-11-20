@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -25,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.monster.sampleproject.Entities.MessageClass;
 import com.example.monster.sampleproject.Entities.Post;
 import com.example.monster.sampleproject.Entities.Root;
 import com.example.monster.sampleproject.Helper.ActivityHelper;
@@ -35,13 +35,9 @@ import com.example.monster.sampleproject.Service.NotificationService;
 import com.example.monster.sampleproject.Singleton.Player;
 import com.google.android.exoplayer.ExoPlaybackException;
 import com.google.gson.Gson;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,14 +53,14 @@ public class MainActivity extends AppCompatActivity {
     private List<String> itemList;
     private List<String> streamAddressList;
     private ProgressDialog progressDialog;
-    private String radioInfoServiceUrl = "https://mehfatitem54.000webhostapp.com/internet_radio_web_service/webservice/server.php?operation=getRadioInfo";
     private ActivityHelper ah = new ActivityHelper();
+    private MessageClass mc = new MessageClass();
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!ah.isOnline(MainActivity.this)) {
-                ah.alertBox(MainActivity.this, "Uyarı", "İnternet bağlantınızı aktif hale getiriniz!");
+                ah.alertBox(MainActivity.this, mc.getUsername(), mc.getInternetConnectionStatus());
             }
         }
     };
@@ -75,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private Player player;
 
 
+    @SuppressWarnings("unchecked")
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
         String year = Integer.toString(calendar.get(Calendar.YEAR));
 
-        footerText.setText("Tüm Hakları Saklıdır © " + year + " | mehfatitem");
+        footerText.setText(mc.getAllRightReserved() + year + " | " + mc.getUsername());
 
 
         loadingText.setVisibility(View.VISIBLE);
@@ -104,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         playPauseButton.performClick();
 
-        radioLiveTitle.setText("Radyo Yayını Seçiniz...");
+        radioLiveTitle.setText(mc.getSelectedRadio());
 
         try {
             new RequestAsyncGet().execute();
@@ -115,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
             radioLiveKindSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    progressDialog.setMessage("Yükleniyor..");
+                    progressDialog.setMessage(mc.getLoading());
                     radioStreamUrl = streamAddressList.get(i);
 
                     if (!isPlaying) {
@@ -142,9 +139,9 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     if (!ah.isOnline(MainActivity.this)) {
 
-                        ah.alertBox(MainActivity.this, "Uyarı", "İnternet bağlantısını aktif hale getiriniz!");
+                        ah.alertBox(MainActivity.this, mc.getWarning(),  mc.getInternetConnectionStatus());
                         playPauseButton.setImageResource(R.drawable.play2);
-                        loadingText.setText("Durduruldu ...");
+                        loadingText.setText(mc.getStopped());
                         stopPlaying();
                     } else {
                         player = Player.getInstance(new IPlayer() {
@@ -191,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
                             isPlaying = true;
                         } else {
                             playPauseButton.setImageResource(R.drawable.play2);
-                            loadingText.setText("Durduruldu ...");
+                            loadingText.setText(mc.getStopped());
                             stopPlaying();
                         }
                         clickCount++;
@@ -224,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                String radioInfoJson =  RequestHandler.sendGet(radioInfoServiceUrl);
+                String radioInfoJson =  RequestHandler.sendGet(mc.getRadioInfoServiceUrl());
 
                 return radioInfoJson;
             } catch (Exception e) {
