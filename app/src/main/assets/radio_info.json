@@ -1,88 +1,88 @@
 {
-  posts: [
+  "posts": [
     {
-      id: "6",
-      radio_name: "7/24 Türkçe Rap",
-      stream_url: "http://95.173.188.166:9984/",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "6",
+      "radio_name": "7\/24 T\u00fcrk\u00e7e Rap",
+      "stream_url": "http:\/\/95.173.188.166:9984\/",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "8",
-      radio_name: "Arabesk FM",
-      stream_url: "http://yayin.damarfm.com:8080/mp3",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "8",
+      "radio_name": "Arabesk FM",
+      "stream_url": "http:\/\/yayin.damarfm.com:8080\/mp3",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "10",
-      radio_name: "Best FM",
-      stream_url: "https://bestfm.turkhosted.com/",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "10",
+      "radio_name": "Best FM",
+      "stream_url": "https:\/\/bestfm.turkhosted.com\/",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "7",
-      radio_name: "Fenomen Rap",
-      stream_url: "https://listen.radyofenomen.com/fenomenrap/128/icecast.audio",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "7",
+      "radio_name": "Fenomen Rap",
+      "stream_url": "https:\/\/listen.radyofenomen.com\/fenomenrap\/128\/icecast.audio",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "11",
-      radio_name: "Kral FM",
-      stream_url: "http://46.20.3.204:80/",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "11",
+      "radio_name": "Kral FM",
+      "stream_url": "http:\/\/46.20.3.204:80\/",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "9",
-      radio_name: "Metro FM",
-      stream_url: "https://25433.live.streamtheworld.com/METRO_FM128AAC.aac",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "9",
+      "radio_name": "Metro FM",
+      "stream_url": "https:\/\/25433.live.streamtheworld.com\/METRO_FM128AAC.aac",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "2",
-      radio_name: "Polis Radyosu TSM Y.",
-      stream_url: "https://m.egm.gov.tr:8095",
-      status: "1",
-      operation_time: "1637320317"
+      "id": "2",
+      "radio_name": "Polis Radyosu TSM Y.",
+      "stream_url": "https:\/\/m.egm.gov.tr:8095",
+      "status": "1",
+      "operation_time": "1637320317"
     },
     {
-      id: "1",
-      radio_name: "Polis Radyosu U.Y.",
-      stream_url: "https://m.egm.gov.tr:8093",
-      status: "1",
-      operation_time: "1637319996"
+      "id": "1",
+      "radio_name": "Polis Radyosu U.Y.",
+      "stream_url": "https:\/\/m.egm.gov.tr:8093",
+      "status": "1",
+      "operation_time": "1637319996"
     },
     {
-      id: "12",
-      radio_name: "Power FM",
-      stream_url: "http://powerfm.listenpowerapp.com/powerfm/mpeg/icecast.audio",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "12",
+      "radio_name": "Power FM",
+      "stream_url": "http:\/\/powerfm.listenpowerapp.com\/powerfm\/mpeg\/icecast.audio",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "3",
-      radio_name: "Power Türk",
-      stream_url: "https://listen.powerapp.com.tr/powerturk/mpeg/icecast.audio?/;stream.mp3",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "3",
+      "radio_name": "Power T\u00fcrk",
+      "stream_url": "https:\/\/listen.powerapp.com.tr\/powerturk\/mpeg\/icecast.audio?\/;stream.mp3",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "5",
-      radio_name: "Radio Fenomen",
-      stream_url: "https://listen.radyofenomen.com/fenomen/128/icecast.audio",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "5",
+      "radio_name": "Radio Fenomen",
+      "stream_url": "https:\/\/listen.radyofenomen.com\/fenomen\/128\/icecast.audio",
+      "status": "1",
+      "operation_time": "1637320628"
     },
     {
-      id: "4",
-      radio_name: "Virgin Radio",
-      stream_url: "https://21323.live.streamtheworld.com/VIRGIN_RADIO.mp3",
-      status: "1",
-      operation_time: "1637320628"
+      "id": "4",
+      "radio_name": "Virgin Radio",
+      "stream_url": "https:\/\/21323.live.streamtheworld.com\/VIRGIN_RADIO.mp3",
+      "status": "1",
+      "operation_time": "1637320628"
     }
   ]
 }
