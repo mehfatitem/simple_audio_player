@@ -24,7 +24,7 @@ public class MessageClass {
         setSelectedRadio("Radyo Yayını Seçiniz...");
         setStopped("Durduruldu ...");
         setRadioInfoServiceUrl("https://mehfatitem54.000webhostapp.com/internet_radio_web_service/webservice/server.php?operation=getRadioInfo");
-        setLoading("YÜkleniyor");
+        setLoading("Yükleniyor...");
     }
 
     public String getWarning() {
